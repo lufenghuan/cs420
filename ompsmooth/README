@@ -1,0 +1,6 @@
+Sample code for assignment #1.
+
+  -- ompsmooth.h:  prototypes.  you may add but do not change.
+  -- ompsmooth.c:  functions.  this is where you will implement your source
+  -- smooth.c: a main/driver file.  use this to configure experiments.
+
