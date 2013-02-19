@@ -1,1 +1,8 @@
 branch test
+
+{
+	master branch
+	func1()
+	func2()
+
+}
