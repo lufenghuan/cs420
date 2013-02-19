@@ -14,7 +14,7 @@ main ()
 {
   int i;
 
-  omp_set_num_threads ( 6 );
+  omp_set_num_threads ( 2 );
 
   #pragma omp parallel for
   for ( i=0; i<10; i++ )

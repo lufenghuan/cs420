@@ -16,7 +16,7 @@ main ()
 
   omp_set_num_threads ( 6 );
 
-  #pragma omp parallel 
+ //pragma omp parallel 
   { 
     int tid = omp_get_thread_num();
     printf("OMP Thread# %d\n", tid);
