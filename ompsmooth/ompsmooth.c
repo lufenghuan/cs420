@@ -87,7 +87,17 @@ void smoothSerialXY ( int dim, int halfwidth, float * m1, float * m2 )
 *-----------------------------------------------------------------------------*/
 void smoothParallelYXFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
-  return;
+	int x,y;
+#pragma omp parallel for 
+	//#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
+	for (y=0; y<dim; y++)
+	{   
+		for (x=0; x<dim; x++)
+		{   
+			m2[y*dim+x] = evaluate ( dim, halfwidth, x, y, m1 );
+		}   
+	}   
+
 }
 
 /*------------------------------------------------------------------------------
@@ -96,15 +106,32 @@ void smoothParallelYXFor ( int dim, int halfwidth, float * m1, float * m2 )
 *-----------------------------------------------------------------------------*/
 void smoothParallelXYFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
-  return;
+	int x,y;
+	///#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
+#pragma omp parallel for 
+	for (x=0; x<dim; x++)
+	{   
+		for (y=0; y<dim; y++)
+		{   
+			m2[y*dim+x] = evaluate ( dim, halfwidth, x, y, m1 );
+		}   
+	}   
+
 }
 
 
 /*------------------------------------------------------------------------------
-* Name:  smoothParallelCoalescedFor
-* Action: flattened for loop in C (row major) order
-*-----------------------------------------------------------------------------*/
+ * Name:  smoothParallelCoalescedFor
+ * Action: flattened for loop in C (row major) order
+ *-----------------------------------------------------------------------------*/
 void smoothParallelCoalescedFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
-  return;
+
+	int i;
+#pragma omp parallel for private (i)
+	for (i=0; i<dim*dim; i++){
+		// x = i%dim;
+		// y = i/dim;
+		m2[i] = evaluate (dim, halfwidth, i%dim, i/dim, m1);
+	}
 }
