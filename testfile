@@ -1,7 +1,7 @@
 branch test
 
 {
-    test branch	master branch
+    master branch
 	func1(master)
 	func2()
 	func3()
