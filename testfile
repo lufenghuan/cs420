@@ -1,8 +1,8 @@
 branch test
 
 {
-    test branch	master branch
-	func1()
+	tets branch
+	func1(test)
 	func2()
 	func3()
 
