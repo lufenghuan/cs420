@@ -88,7 +88,7 @@ void smoothSerialXY ( int dim, int halfwidth, float * m1, float * m2 )
 void smoothParallelYXFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
 	int x,y;
-#pragma omp parallel for 
+ 	#pragma omp parallel for 
 	//#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
 	for (y=0; y<dim; y++)
 	{   
@@ -107,8 +107,8 @@ void smoothParallelYXFor ( int dim, int halfwidth, float * m1, float * m2 )
 void smoothParallelXYFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
 	int x,y;
-	///#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
-#pragma omp parallel for 
+//	#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
+	#pragma omp parallel for 
 	for (x=0; x<dim; x++)
 	{   
 		for (y=0; y<dim; y++)
@@ -128,10 +128,28 @@ void smoothParallelCoalescedFor ( int dim, int halfwidth, float * m1, float * m2
 {
 
 	int i;
-#pragma omp parallel for private (i)
+	#pragma omp parallel for private (i)
 	for (i=0; i<dim*dim; i++){
 		// x = i%dim;
 		// y = i/dim;
 		m2[i] = evaluate (dim, halfwidth, i%dim, i/dim, m1);
 	}
+}
+/*------------------------------------------------------------------------------
+* Name:  smoothParallelYXFor2
+* Action: for loop in C (row major) order for two out come array
+*-----------------------------------------------------------------------------*/
+void smoothParallelYXFor2 ( int dim, int halfwidth, float * m1in,float * m2in, float * m3out, float *m4out )
+{
+	int x,y;
+ 	#pragma omp parallel for 
+	for (y=0; y<dim; y++)
+	{   
+		for (x=0; x<dim; x++)
+		{   
+			m3out[y*dim+x] = evaluate ( dim, halfwidth, x, y, m1in );
+			m4out[y*dim+x] = evaluate ( dim, halfwidth, x, y, m2in );
+		}   
+	}   
+
 }
