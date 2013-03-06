@@ -88,8 +88,7 @@ void smoothSerialXY ( int dim, int halfwidth, float * m1, float * m2 )
 void smoothParallelYXFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
 	int x,y;
- 	#pragma omp parallel for 
-	//#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
+ 	#pragma omp parallel for private (x,y) 
 	for (y=0; y<dim; y++)
 	{   
 		for (x=0; x<dim; x++)
@@ -107,8 +106,7 @@ void smoothParallelYXFor ( int dim, int halfwidth, float * m1, float * m2 )
 void smoothParallelXYFor ( int dim, int halfwidth, float * m1, float * m2 )
 {
 	int x,y;
-//	#pragma omp parallel for default(none) shared (dim,halfwidth,m1,m2) private(y,x)
-	#pragma omp parallel for 
+	#pragma omp parallel for private (x,y)
 	for (x=0; x<dim; x++)
 	{   
 		for (y=0; y<dim; y++)
@@ -142,7 +140,7 @@ void smoothParallelCoalescedFor ( int dim, int halfwidth, float * m1, float * m2
 void smoothParallelYXFor2 ( int dim, int halfwidth, float * m1in,float * m2in, float * m3out, float *m4out )
 {
 	int x,y;
- 	#pragma omp parallel for 
+ 	#pragma omp parallel for private (x,y)
 	for (y=0; y<dim; y++)
 	{   
 		for (x=0; x<dim; x++)
