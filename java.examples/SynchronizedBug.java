@@ -19,7 +19,7 @@ class SynchronizedBug implements Runnable
   {
     for ( int i=0; i<10000000; i++ )
     {
-      synchronized(this){sharedsynchvar++;}
+      synchronized(this){sharedsynchvar++;} //bug, should be SynchronizedBug.class
     }
   }
 
