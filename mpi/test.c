@@ -12,7 +12,7 @@
 #define SET_BIT(char_array,i) (char_array[i/8] |= 1<<(8-(i%8)-1) )
 #define OFF_BIT(char_array,i) (char_array[i/8] &= ~(1<<(8-(i%8)-1)) )
 
-const int grider[3][3]={{1,0,0},{0,1,1},{1,1,0}};
+const int grider[3][3]={{0,1,0},{0,0,1},{1,1,1}};
 int num_procs;      //process number
 int ID;             //process id
  
@@ -231,12 +231,12 @@ void send_to_neighbour(char *grid,int num_row, int row_per_id, MPI_Status stat){
 int main(int argc, char *argv[]){
     int row_per_id;     //num of row each process cacl
     int num_row;        //num of row each process need
-                        //to calc change
+    //to calc change
     char *grid;         //partial grid each process store
     int len;            //num of char  of partial grid
     char *buff;         //send and recv buff
     int buf_len;        //buf length (num of char)
-    
+
     MPI_Request snd_req; // send handle
     MPI_Request rcv_req; //receive handle
     MPI_Status stat;
@@ -261,60 +261,107 @@ int main(int argc, char *argv[]){
 
     memset(grid,0,len);//init to all zero
     init_procs(grid,ID,row_per_id,num_row);
-  //  print_bit(grid,len,ID);
-    
+
     //barrier
     MPI_Barrier(MPI_COMM_WORLD); 
-   
-   
-    MPI_Barrier(MPI_COMM_WORLD); 
+
+    //iteration
+    int itr;
+    for(itr=0;itr<64;itr++){ 
+        //update
+        update(grid,num_row,row_per_id);
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        if(ID==2){
+            printf("after %d update \n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        if(ID==0){
+            printf("after %d update \n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        if(ID==1){
+            printf("after %d update \n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+
+        puts("===========");
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        //send to neighour process
+        send_to_neighbour(grid,num_row,row_per_id,stat);
+
+        MPI_Barrier(MPI_COMM_WORLD); 
+        if(ID==2){
+            printf("after %d th send_to_neigh \n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        if(ID==0){
+            printf("after %d th send_to_neigh \n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        if(ID==1){
+            printf("after %d th send_to_neigh \n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+
+        //recv from other process
+        if(ID==0){
+            recv_from_other(grid,row_per_id,stat);
+        }
+        //send to process 0
+        else{
+            send_to_process(0,grid,row_per_id,stat);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+        if(ID==0){
+            printf("i=%d ===================\n",itr);
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD); 
+        MPI_Barrier(MPI_COMM_WORLD); 
+        if(ID==2){
+            puts("after send and recv");
+            print_bit(grid,len,ID);
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+
+    return 0;
+
+
+    //step 2
+
     //update
+    MPI_Barrier(MPI_COMM_WORLD);  
     update(grid,num_row,row_per_id);
-    MPI_Barrier(MPI_COMM_WORLD); 
-
-    if(ID==2){
-        puts("after first update");
+    MPI_Barrier(MPI_COMM_WORLD);
+    if(ID==0)
+        puts("after step2");
+    if(ID==0)
         print_bit(grid,len,ID);
-    }
-    MPI_Barrier(MPI_COMM_WORLD); 
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    if(ID==0){
-        puts("after first update");
+    if(ID==1)
         print_bit(grid,len,ID);
-    }
-    MPI_Barrier(MPI_COMM_WORLD); 
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    if(ID==1){
-        puts("after first update");
+    if(ID==2)
         print_bit(grid,len,ID);
-    }
-    MPI_Barrier(MPI_COMM_WORLD); 
-
-
-    puts("===========");
-    MPI_Barrier(MPI_COMM_WORLD); 
-   
-    //send to neighour process
+    MPI_Barrier(MPI_COMM_WORLD);
+   //send to neighour process
     send_to_neighbour(grid,num_row,row_per_id,stat);
-
-    MPI_Barrier(MPI_COMM_WORLD); 
-    if(ID==2){
-        puts("after first send_to_neighbour");
-        print_bit(grid,len,ID);
-    }
-     MPI_Barrier(MPI_COMM_WORLD); 
-   
-     if(ID==0){
-        puts("after first send_to_neighbour");
-        print_bit(grid,len,ID);
-    }
-     MPI_Barrier(MPI_COMM_WORLD); 
-
-     if(ID==1){
-        puts("after first send_to_neighbour");
-        print_bit(grid,len,ID);
-    }
-     MPI_Barrier(MPI_COMM_WORLD); 
 
     //recv from other process
     if(ID==0){
@@ -324,22 +371,21 @@ int main(int argc, char *argv[]){
     else{
         send_to_process(0,grid,row_per_id,stat);
     }
-    MPI_Barrier(MPI_COMM_WORLD); 
+    MPI_Barrier(MPI_COMM_WORLD);
     if(ID==0)
         print_bit(grid,len,ID);
-    MPI_Barrier(MPI_COMM_WORLD); 
-     MPI_Barrier(MPI_COMM_WORLD); 
-    if(ID==2){
-        puts("after send and recv");
+    MPI_Barrier(MPI_COMM_WORLD);
+    if(ID==1){
+        puts("end of step2");
         print_bit(grid,len,ID);
     }
- MPI_Barrier(MPI_COMM_WORLD); 
-    //step 2
+
+     //step 3
     MPI_Barrier(MPI_COMM_WORLD);  
     update(grid,num_row,row_per_id);
     MPI_Barrier(MPI_COMM_WORLD);
     if(ID==0)
-        puts("after step2");
+        puts("after step3");
     if(ID==0)
         print_bit(grid,len,ID);
     MPI_Barrier(MPI_COMM_WORLD);
@@ -364,5 +410,5 @@ int main(int argc, char *argv[]){
     if(ID==0)
         print_bit(grid,len,ID);
 
-  
+ 
 }
