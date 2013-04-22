@@ -137,8 +137,8 @@ int num_live(char *grid, int row, int col){
                     puts("invalid");
                 puts(""); 
             }
-            if(valid(row+i,col+j)==1 && !(i==0&&j==0)
-                    && IS_BIT_SET(grid,((row+i)*DIM+col+j))){
+            if(!(i==0&&j==0)
+                    && IS_BIT_SET(grid,((row+i)%DIM*DIM+(col+j)%DIM ))){
              //   puts("++ \n");
                 count++;}
         }
@@ -176,9 +176,9 @@ void recv_from_other(char *grid, int row_per_id,MPI_Status stat){
  * */
 
 void send_to_process(int i, char *grid, int row_per_id,MPI_Status stat){
-    int row_len=DIM/8;
-    int off_set=ID==0 ? off_set=0:row_len;
-    MPI_Send(grid+off_set,row_len*row_per_id,MPI_CHAR,i,1,MPI_COMM_WORLD);
+  int row_len = DIM/8;
+  int off_set = ID==0 ? 0:row_len;
+  MPI_Send(grid+off_set,row_len*row_per_id,MPI_CHAR,i,1,MPI_COMM_WORLD);
 }
 
 void send_to_neighbour(char *grid,int num_row, int row_per_id, MPI_Status stat){
@@ -272,45 +272,45 @@ int main(int argc, char *argv[]){
         update(grid,num_row,row_per_id);
         MPI_Barrier(MPI_COMM_WORLD); 
 
-        if(ID==2){
+        if(ID==-1){
             printf("after %d update \n",itr);
             print_bit(grid,len,ID);
         }
         MPI_Barrier(MPI_COMM_WORLD); 
 
-        if(ID==0){
+        if(ID==-1){
             printf("after %d update \n",itr);
             print_bit(grid,len,ID);
         }
         MPI_Barrier(MPI_COMM_WORLD); 
 
-        if(ID==1){
+        if(ID==-1){
             printf("after %d update \n",itr);
             print_bit(grid,len,ID);
         }
         MPI_Barrier(MPI_COMM_WORLD); 
 
 
-        puts("===========");
+        //puts("===========");
         MPI_Barrier(MPI_COMM_WORLD); 
 
         //send to neighour process
         send_to_neighbour(grid,num_row,row_per_id,stat);
 
         MPI_Barrier(MPI_COMM_WORLD); 
-        if(ID==2){
+        if(ID==-1){
             printf("after %d th send_to_neigh \n",itr);
             print_bit(grid,len,ID);
         }
         MPI_Barrier(MPI_COMM_WORLD); 
 
-        if(ID==0){
+        if(ID==-1){
             printf("after %d th send_to_neigh \n",itr);
             print_bit(grid,len,ID);
         }
         MPI_Barrier(MPI_COMM_WORLD); 
 
-        if(ID==1){
+        if(ID==-1){
             printf("after %d th send_to_neigh \n",itr);
             print_bit(grid,len,ID);
         }
