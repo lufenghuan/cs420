@@ -39,7 +39,6 @@ int ID;             //process id
 void print_bit(char *bytes, int len, int ID){
   int i;
   int j;
-  printf("ID=%d ====================\n",ID);
   for(i=0; i<len; i++){
     for(j=7; j>=0; j--){
       char mask = 1<<j;
@@ -298,9 +297,8 @@ int main(int argc, char *argv[]){
       }
     }//end of num_process > 1
     if(ID==0){
-      printf("i=%d ===================\n",itr);
+      printf("Iteration %d: updated grid\n",itr);
       print_bit(grid,len,ID);
-      printf("\n");
     }
     MPI_Barrier(MPI_COMM_WORLD);
   }
