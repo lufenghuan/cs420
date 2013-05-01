@@ -75,7 +75,7 @@ __global__ void NNSmoothKernel ( float* pFieldIn, float* pFieldOut, size_t pitch
   unsigned xindex = (blockIdx.x * blockDim.x + threadIdx.x);
   unsigned yindex = (blockIdx.y * blockDim.y + threadIdx.y);
 
-  float r = 0.0;
+  float r = 0.0;//result
   unsigned i,j;
   for( i=0; i<2*halfwidth;i++){
     for(j=0;j<2*halfwidth,j++){
