@@ -72,7 +72,20 @@ __global__ void NNSmoothKernel ( float* pFieldIn, float* pFieldOut, size_t pitch
   // pitch is in bytes, figure out the number of elements for addressing memory locations in pFieldIn and pFieldOut
   unsigned pitchels = pitch/sizeof(float);
 
-  ......
+  unsigned xindex = (blockIdx.x * blockDim.x + threadIdx.x);
+  unsigned yindex = (blockIdx.y * blockDim.y + threadIdx.y);
+
+  float r = 0.0;
+  unsigned i,j;
+  for( i=0; i<2*halfwidth;i++){
+    for(j=0;j<2*halfwidth,j++){
+        r += pFieldIn [pitchels *(yindex + i) +xindex +j]
+    }
+  }
+
+  r /= float((2*halfWidth+1)*(2*halfWidth+1));
+  pFieldOut [ (yindex+halfwidth)*pitchels + xindex+halfwidth ] = value; 
+
 
 } 
 
@@ -107,8 +120,9 @@ bool SmoothField ( float* pHostFieldIn, float *pHostFieldOut )
   gettimeofday ( &tb, NULL );
 
   // Construct a 2d grid/block from the parameters in CUDAGrid
-  const dim3 DimBlock; //.....TODO
-  const dim3 DimGrid; //.....TODO
+  const dim3 DimBlock (blockWidth, blockWidth); //.....TODO
+  const dim3 DimGrid ((dataWidth-2*halfWidth)/blockWidth,
+                      (dataWidth-2*halfWidth)/blockWidth; //.....TODO
 
   // Invoke the kernel
   NNSmoothKernel <<<DimGrid,DimBlock>>> ( pDeviceFieldIn, pDeviceFieldOut, pitch, halfWidth ); 
