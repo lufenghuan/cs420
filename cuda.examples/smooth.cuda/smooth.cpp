@@ -143,12 +143,12 @@ int main ()
   //  the valid region is from 
   //   corner (kernelwidth, kernelwidth) to
   //   corner (dimension-kernelwidth-1, dimension-kernelwidth-1)
-//  unsigned dimension = 4112;
-//  unsigned kernelwidth = 8; 
+    unsigned dimension = 2064;
+    unsigned kernelwidth = 8; 
 
 //  These are good small values to use.
-  unsigned dimension = 8;
-  unsigned kernelwidth = 1; 
+  //unsigned dimension = 8;
+  //unsigned kernelwidth = 1; 
 
   // Create the input field
   float *field = (float *) malloc ( dimension * dimension * sizeof(float));
@@ -176,7 +176,7 @@ int main ()
   }
 
   // See what happened.
-  for ( unsigned j=0; j< dimension; j++ )
+  for ( unsigned j=dimension; j< dimension; j++ )
   {
     for ( unsigned i=0; i< dimension; i++ )
     {

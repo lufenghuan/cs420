@@ -40,25 +40,25 @@
 #include <cuda.h>
 
 // Data is of size dataWidth * dataWidth
-//const unsigned int dataWidth = 4112;
+const unsigned int dataWidth = 2064;
 
 // Parameter to express the smoothing kernel halfwidth
-//const unsigned int halfWidth = 8;
+const unsigned int halfWidth = 8;
 
 // Size of the CUDA threadBlock
-//const unsigned int blockWidth = 16;
+const unsigned int blockWidth = 16;
 
 
 /* Small values good for testing */
 
 // Data is of size dataWidth * dataWidth
-const unsigned int dataWidth = 8;
+//const unsigned int dataWidth = 8;
 
 // Parameter to express the smoothing kernel halfwidth
-const unsigned int halfWidth = 1;
+//const unsigned int halfWidth = 1;
 
 // Size of the CUDA threadBlock
-const unsigned int blockWidth = 2;
+//const unsigned int blockWidth = 2;
 
 
 
@@ -78,13 +78,13 @@ __global__ void NNSmoothKernel ( float* pFieldIn, float* pFieldOut, size_t pitch
   float r = 0.0;//result
   unsigned i,j;
   for( i=0; i<2*halfwidth;i++){
-    for(j=0;j<2*halfwidth,j++){
-        r += pFieldIn [pitchels *(yindex + i) +xindex +j]
+    for(j=0;j<2*halfwidth;j++){
+        r += pFieldIn [pitchels *(yindex + i) +xindex +j];
     }
   }
 
   r /= float((2*halfWidth+1)*(2*halfWidth+1));
-  pFieldOut [ (yindex+halfwidth)*pitchels + xindex+halfwidth ] = value; 
+  pFieldOut [ (yindex+halfwidth)*pitchels + xindex+halfwidth ] = r; 
 
 
 } 
@@ -122,7 +122,7 @@ bool SmoothField ( float* pHostFieldIn, float *pHostFieldOut )
   // Construct a 2d grid/block from the parameters in CUDAGrid
   const dim3 DimBlock (blockWidth, blockWidth); //.....TODO
   const dim3 DimGrid ((dataWidth-2*halfWidth)/blockWidth,
-                      (dataWidth-2*halfWidth)/blockWidth; //.....TODO
+                      (dataWidth-2*halfWidth)/blockWidth); //.....TODO
 
   // Invoke the kernel
   NNSmoothKernel <<<DimGrid,DimBlock>>> ( pDeviceFieldIn, pDeviceFieldOut, pitch, halfWidth ); 
@@ -192,7 +192,7 @@ int main ()
   SmoothField ( field, out );
 
   // Print the output field (for debugging purposes.
-  for ( unsigned j=0; j< dataWidth; j++ )
+  for ( unsigned j=dataWidth; j< dataWidth; j++ )
   {
     for ( unsigned i=0; i< dataWidth; i++ )
     {
